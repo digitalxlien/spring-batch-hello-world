@@ -1,0 +1,42 @@
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: simple-batch
+  labels:
+    app: simple-batch
+spec:
+  selector:
+    matchLabels:
+      app: simple-batch
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: simple-batch
+        tier: frontend
+    spec:
+      containers:
+        - image: altusservice
+          name: simple-batch
+          env:
+            - name: appName
+              value: simple-batch
+          ports:
+            - containerPort: 9005
+              name: simple-batch
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-batch
+  labels:
+    app: simple-batch
+spec:
+  ports:
+    - port: 9005
+  selector:
+    app: simple-batch
+    tier: frontend
+  type: LoadBalancer
